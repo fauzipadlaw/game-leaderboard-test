@@ -12,11 +12,6 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
@@ -26,4 +21,23 @@ Route::group([
     Route::post('refresh', 'Api\AuthController@refresh');
     Route::post('me', 'Api\AuthController@me');
     Route::post('register', 'Api\AuthController@register');
+});
+
+Route::group([
+    'middleware' => 'api'
+], function () {
+    // game's routes
+    Route::get('games', 'Api\GameController@index');
+    Route::get('games/sort', 'Api\GameController@sortByMostPlayedGames');
+    Route::post('games', 'Api\GameController@add');
+    Route::delete('games/purge-deleted', 'Api\GameController@purgeAll');
+    Route::post('games/{id}', 'Api\GameController@update');
+    Route::delete('games/{id}', 'Api\GameController@delete');
+
+    // player's routes
+    Route::get('players', 'Api\PlayerController@index');
+    Route::post('players', 'Api\PlayerController@add');
+    Route::delete('players/purge-deleted', 'Api\PlayerController@purgeAll');
+    Route::post('players/{id}', 'Api\PlayerController@update');
+    Route::delete('players/{id}', 'Api\PlayerController@delete');
 });

@@ -4,9 +4,53 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use App\Game;
+use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller
 {
+    /**
+     * Games with sum of its players.
+     *
+     * @param  Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index()
+    {
+        $games = Game::with('players')->paginate(10);
+        return response()->json([
+            'games' => $games
+        ], 200);
+    }
+
+    public function sortByMostPlayedGames()
+    {
+        // $games = Game::leftJoin('players', 'games.id', '=', 'players.game_id')
+        //     ->leftJoin(
+        //             DB::raw(
+        //                 '(select p.id as player_id, name as player_name, game_id, score as player_score from players p 
+        //                 join (select p2.id, max(p2.score) as maxscore
+        //                 from players p2 group by p2.id) as q 
+        //                 on p.id = q.id
+        //                 and p.score = q.maxscore group by q.id order by player_score desc) as plays'), 'games.id', '=', 'plays.game_id')
+        //         ->select(
+        //             'games.id',
+        //             'games.name',
+        //             DB::raw('count(players.id) as total_players'),
+        //             'plays.player_name',
+        //             'plays.player_score'
+        //             )
+        //         ->groupBy('games.id', 'plays.player_name', 'plays.player_score')
+        //         ->get();
+
+        $games = Game::with('top_player')->paginate(10);
+        return response()->json([
+            'games' => $games
+        ], 200);
+    }
+
     /**
      * Add a game.
      *
@@ -29,6 +73,7 @@ class GameController extends Controller
         ]);
 
         return response()->json([
+            'message' => 'Game has been saved successfully',
             'game' => $game
         ], 201);
     }
@@ -58,6 +103,7 @@ class GameController extends Controller
         ]);
 
         return response()->json([
+            'message' => 'Game has been updated successfully',
             'game' => $game
         ], 201);
     }
@@ -82,7 +128,7 @@ class GameController extends Controller
         }
 
         return response()->json([
-            'message' => 'Game deleted successfully.'
+            'message' => 'Game was deleted.'
         ], 200);
     }
 
@@ -93,7 +139,7 @@ class GameController extends Controller
      */
     public function purgeAll()
     {
-        $games = Game::onlyTrashed()->get();
+        $games = Game::onlyTrashed();
 
         try {
             $games->forceDelete();
@@ -104,8 +150,7 @@ class GameController extends Controller
         }
 
         return response()->json([
-            'message' => 'All trashed games deleted successfully.'
+            'message' => 'All trashed games were deleted permanently.'
         ], 200);
     }
-    
 }
