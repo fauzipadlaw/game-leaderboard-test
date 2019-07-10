@@ -4,10 +4,12 @@
     <form @submit.prevent="addPlayer" class="mb-3">
       <div class="form-group">
         <input type="text" class="form-control" placeholder="Player's Name.." v-model="player.name" />
+        <br />
         <select v-model="player.game_id" class="form-control">
           <option value selected disabled>Select Game..</option>
           <option v-for="game in games" v-bind:value="game.id" v-bind:key="game.id">{{ game.name }}</option>
         </select>
+        <br />
         <input
           type="number"
           :readonly="edit"
@@ -16,7 +18,7 @@
           v-model="player.score"
         />
       </div>
-      <button type="submit" class="btn btn-light btn-block">Save</button>
+      <button type="submit" class="btn btn-primary btn-block">Save</button>
     </form>
     <button @click="clearForm()" class="btn btn-danger btn-block">Cancel</button>
     <hr />
@@ -93,9 +95,14 @@ export default {
 
   methods: {
     fetchPlayers(page_url) {
+      let token = localStorage.getItem("access_token");
       page_url = page_url || "/api/players";
       fetch(page_url, {
-        method: "get"
+        method: "get",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
       })
         .then(res => res.json())
         .then(res => {
@@ -105,8 +112,13 @@ export default {
         .catch(err => console.log(err));
     },
     fetchGames() {
+      let token = localStorage.getItem("access_token");
       fetch("/api/games/all", {
-        method: "get"
+        method: "get",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
       })
         .then(res => res.json())
         .then(res => {
@@ -124,9 +136,14 @@ export default {
       this.pagination = pagination;
     },
     deletePlayer(id) {
+      let token = localStorage.getItem("access_token");
       if (confirm("Are You Sure?")) {
         fetch(`api/players/${id}`, {
-          method: "delete"
+          method: "delete",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
         })
           .then(res => res.json())
           .then(data => {
@@ -137,13 +154,15 @@ export default {
       }
     },
     addPlayer() {
+      let token = localStorage.getItem("access_token");
       if (this.edit === false) {
         // Add
         fetch("api/players", {
           method: "post",
           body: JSON.stringify(this.player),
           headers: {
-            "content-type": "application/json"
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
           }
         })
           .then(res => res.json())
@@ -160,7 +179,8 @@ export default {
           method: "post",
           body: JSON.stringify(this.player),
           headers: {
-            "content-type": "application/json"
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
           }
         })
           .then(res => res.json())

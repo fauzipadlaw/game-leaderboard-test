@@ -57,9 +57,10 @@ class GameController extends Controller
             $item->top_player = Game::find($item->id)->players()->orderBy('score', 'desc')->first();
         });
 
-        $paginatedGames = $this->paginate($games, 10);
+        // i tought this should be paginated too :D
+        // $games = $this->paginate($games, 10);
 
-        return response()->json($paginatedGames, 200);
+        return response()->json($games, 200);
     }
 
     /**
@@ -167,6 +168,7 @@ class GameController extends Controller
 
 
     // This function works to paginate a collection
+    // This function is not used, it was my misunderstanding...
     protected function paginate($items, $perPage, $setDefaultOption = true, $options = [])
     {
         if ($setDefaultOption) {

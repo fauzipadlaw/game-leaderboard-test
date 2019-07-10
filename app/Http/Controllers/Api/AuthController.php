@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\User;
@@ -97,6 +96,17 @@ class AuthController extends Controller
         $token = JWTAuth::fromUser($user);
 
         return response()->json(compact('user', 'token'), 201);
+    }
+
+    /**
+     * Get token payloads.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function payload(Request $request)
+    {
+
+        return auth()->payload();
     }
 
     /**

@@ -11,13 +11,96 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 const routes = [
-    { path: "/", component: require("./components/GamesComponent").default },
-    { path: "/games", component: require("./components/GamesComponent").default },
-    { path: "/players", component: require("./components/PlayersComponent").default }
+    {
+        path: "/",
+        component: require("./components/TopGamesComponent").default,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: "/games",
+        component: require("./components/GamesComponent").default,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: "/players",
+        component: require("./components/PlayersComponent").default,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: "/top-games",
+        component: require("./components/TopGamesComponent").default,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: "/login",
+        component: require("./components/LoginComponent").default,
+        meta: {
+            guest: true
+        }
+    },
+    {
+        path: "/register",
+        component: require("./components/RegisterComponent").default,
+        meta: {
+            guest: true
+        }
+    },
+    {
+        path: "/token",
+        component: require("./components/TokenComponent").default,
+        meta: {
+            requiresAuth: true
+        }
+    }
 ];
 
 const router = new VueRouter({
     routes
+});
+
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (localStorage.getItem("access_token") == null) {
+            next({
+                path: "/login",
+                params: { nextUrl: to.fullPath }
+            });
+        } else {
+            let token = localStorage.getItem("access_token");
+            fetch("api/auth/me", {
+                method: "post",
+                headers: {
+                    "content-type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            })
+                .then(res => res.json())
+                .then(() => {
+                    next();
+                })
+                .catch(err => {
+                    console.log(err);
+                    localStorage.removeItem("access_token");
+                    next("/login");
+                });
+        }
+    } else if (to.matched.some(record => record.meta.guest)) {
+        if (localStorage.getItem("access_token") == null) {
+            next();
+        } else {
+            next("/");
+        }
+    } else {
+        next();
+    }
 });
 
 /**
@@ -34,14 +117,6 @@ const router = new VueRouter({
 Vue.component(
     "navbar-component",
     require("./components/NavbarComponent.vue").default
-);
-Vue.component(
-    "games-component",
-    require("./components/GamesComponent.vue").default
-);
-Vue.component(
-    "players-component",
-    require("./components/PlayersComponent.vue").default
 );
 
 /**

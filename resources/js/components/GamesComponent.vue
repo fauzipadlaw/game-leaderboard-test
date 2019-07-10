@@ -5,7 +5,7 @@
       <div class="form-group">
         <input type="text" class="form-control" placeholder="Game's Name.." v-model="game.name" />
       </div>
-      <button type="submit" class="btn btn-light btn-block">Save</button>
+      <button type="submit" class="btn btn-primary btn-block">Save</button>
     </form>
     <button @click="clearForm()" class="btn btn-danger btn-block">Cancel</button>
     <hr />
@@ -35,6 +35,7 @@
           <tr>
             <th>#</th>
             <th>Game's Name</th>
+            <th>Players</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -42,6 +43,7 @@
           <tr v-for="(game, index) in games" v-bind:key="game.id">
             <td>{{ index + 1 }}</td>
             <td>{{ game.name }}</td>
+            <td>{{ game.total_players }}</td>
             <td>
               <button @click="editGame(game)" class="btn btn-warning">Edit</button>
               <button @click="deleteGame(game.id)" class="btn btn-danger">Delete</button>
@@ -74,9 +76,14 @@ export default {
 
   methods: {
     fetchGames(page_url) {
+      let token = localStorage.getItem("access_token");
       page_url = page_url || "/api/games";
       fetch(page_url, {
-        method: "get"
+        method: "get",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
       })
         .then(res => res.json())
         .then(res => {
@@ -95,9 +102,14 @@ export default {
       this.pagination = pagination;
     },
     deleteGame(id) {
+      let token = localStorage.getItem("access_token");
       if (confirm("Are You Sure?")) {
         fetch(`api/games/${id}`, {
-          method: "delete"
+          method: "delete",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
         })
           .then(res => res.json())
           .then(data => {
@@ -108,13 +120,15 @@ export default {
       }
     },
     addGame() {
+      let token = localStorage.getItem("access_token");
       if (this.edit === false) {
         // Add
         fetch("api/games", {
           method: "post",
           body: JSON.stringify(this.game),
           headers: {
-            "content-type": "application/json"
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
           }
         })
           .then(res => res.json())
@@ -131,7 +145,8 @@ export default {
           method: "post",
           body: JSON.stringify(this.game),
           headers: {
-            "content-type": "application/json"
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
           }
         })
           .then(res => res.json())
