@@ -18,9 +18,7 @@ class PlayerController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'players' => Player::getAllDetailPlayers()
-        ], 200);
+        return response()->json(Player::getAllDetailPlayers(), 200);
     }
 
     /**

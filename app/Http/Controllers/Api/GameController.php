@@ -27,6 +27,17 @@ class GameController extends Controller
     }
 
     /**
+     * All games without pagination.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function all()
+    {
+        $games = Game::all();
+        return response()->json($games, 200);
+    }
+
+    /**
      * Sort games by the most players.
      *
      * @return \Illuminate\Http\JsonResponse

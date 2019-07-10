@@ -4,9 +4,21 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-require('./bootstrap');
+require("./bootstrap");
 
-window.Vue = require('vue');
+window.Vue = require("vue");
+import VueRouter from "vue-router";
+Vue.use(VueRouter);
+
+const routes = [
+    { path: "/", component: require("./components/GamesComponent").default },
+    { path: "/games", component: require("./components/GamesComponent").default },
+    { path: "/players", component: require("./components/PlayersComponent").default }
+];
+
+const router = new VueRouter({
+    routes
+});
 
 /**
  * The following block of code may be used to automatically register your
@@ -19,8 +31,18 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('navbar-component', require('./components/NavbarComponent.vue').default);
-Vue.component('games-component', require('./components/GamesComponent.vue').default);
+Vue.component(
+    "navbar-component",
+    require("./components/NavbarComponent.vue").default
+);
+Vue.component(
+    "games-component",
+    require("./components/GamesComponent.vue").default
+);
+Vue.component(
+    "players-component",
+    require("./components/PlayersComponent.vue").default
+);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -29,5 +51,6 @@ Vue.component('games-component', require('./components/GamesComponent.vue').defa
  */
 
 const app = new Vue({
-    el: '#app',
+    el: "#app",
+    router
 });

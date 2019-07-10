@@ -27,7 +27,7 @@ class Player extends Model
     public static function getAllDetailPlayers()
     {
         return Player::join('games', 'players.game_id', '=', 'games.id')
-            ->select('players.name as player_name', 'players.score', 'games.name as game')
+            ->select('players.id', 'players.name', 'players.game_id', 'players.score', 'games.name as game')
             ->paginate(10);
     }
 }

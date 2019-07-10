@@ -31,6 +31,7 @@ Route::group([
 ], function () {
     // game's routes
     Route::get('games', 'Api\GameController@index');
+    Route::get('games/all', 'Api\GameController@all');
     Route::get('games/sort', 'Api\GameController@sortByMostPlayedGames');
     Route::post('games', 'Api\GameController@add');
     Route::delete('games/purge-deleted', 'Api\GameController@purgeAll');

@@ -1,9 +1,20 @@
 <template>
   <div>
-    <h2>Games</h2>
-    <form @submit.prevent="addGame" class="mb-3">
+    <h2>Players</h2>
+    <form @submit.prevent="addPlayer" class="mb-3">
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Game's Name.." v-model="game.name" />
+        <input type="text" class="form-control" placeholder="Player's Name.." v-model="player.name" />
+        <select v-model="player.game_id" class="form-control">
+          <option value selected disabled>Select Game..</option>
+          <option v-for="game in games" v-bind:value="game.id" v-bind:key="game.id">{{ game.name }}</option>
+        </select>
+        <input
+          type="number"
+          :readonly="edit"
+          class="form-control"
+          placeholder="Player's Score.."
+          v-model="player.score"
+        />
       </div>
       <button type="submit" class="btn btn-light btn-block">Save</button>
     </form>
@@ -13,7 +24,7 @@
     <nav aria-label="Page navigation example">
       <ul class="pagination">
         <li v-bind:class="[{disabled: !pagination.prev_page_url}]" class="page-item">
-          <a class="page-link" href="#" @click="fetchGames(pagination.prev_page_url)">Previous</a>
+          <a class="page-link" href="#" @click="fetchPlayers(pagination.prev_page_url)">Previous</a>
         </li>
 
         <li class="page-item disabled">
@@ -24,7 +35,7 @@
         </li>
 
         <li v-bind:class="[{disabled: !pagination.next_page_url}]" class="page-item">
-          <a class="page-link" href="#" @click="fetchGames(pagination.next_page_url)">Next</a>
+          <a class="page-link" href="#" @click="fetchPlayers(pagination.next_page_url)">Next</a>
         </li>
       </ul>
     </nav>
@@ -34,17 +45,21 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Game's Name</th>
+            <th>Player's Name</th>
+            <th>Game</th>
+            <th>Score</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(game, index) in games" v-bind:key="game.id">
+          <tr v-for="(player, index) in players" v-bind:key="player.id">
             <td>{{ index + 1 }}</td>
-            <td>{{ game.name }}</td>
+            <td>{{ player.name }}</td>
+            <td>{{ player.game }}</td>
+            <td>{{ player.score }}</td>
             <td>
-              <button @click="editGame(game)" class="btn btn-warning">Edit</button>
-              <button @click="deleteGame(game.id)" class="btn btn-danger">Delete</button>
+              <button @click="editPlayer(player)" class="btn btn-warning">Edit</button>
+              <button @click="deletePlayer(player.id)" class="btn btn-danger">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -57,31 +72,45 @@
 export default {
   data() {
     return {
-      games: [],
-      game: {
+      players: [],
+      player: {
         id: "",
-        name: ""
+        name: "",
+        game_id: "",
+        score: ""
       },
-      game_id: "",
+      player_id: "",
       pagination: {},
+      games: [],
       edit: false
     };
   },
 
   created() {
+    this.fetchPlayers();
     this.fetchGames();
   },
 
   methods: {
-    fetchGames(page_url) {
-      page_url = page_url || "/api/games";
+    fetchPlayers(page_url) {
+      page_url = page_url || "/api/players";
       fetch(page_url, {
         method: "get"
       })
         .then(res => res.json())
         .then(res => {
-          this.games = res.data;
+          this.players = res.data;
           this.makePagination(res);
+        })
+        .catch(err => console.log(err));
+    },
+    fetchGames() {
+      fetch("/api/games/all", {
+        method: "get"
+      })
+        .then(res => res.json())
+        .then(res => {
+          this.games = res;
         })
         .catch(err => console.log(err));
     },
@@ -94,25 +123,25 @@ export default {
       };
       this.pagination = pagination;
     },
-    deleteGame(id) {
+    deletePlayer(id) {
       if (confirm("Are You Sure?")) {
-        fetch(`api/games/${id}`, {
+        fetch(`api/players/${id}`, {
           method: "delete"
         })
           .then(res => res.json())
           .then(data => {
-            alert("Game Removed");
-            this.fetchGames();
+            alert("Player Removed");
+            this.fetchPlayers();
           })
           .catch(err => console.log(err));
       }
     },
-    addGame() {
+    addPlayer() {
       if (this.edit === false) {
         // Add
-        fetch("api/games", {
+        fetch("api/players", {
           method: "post",
-          body: JSON.stringify(this.game),
+          body: JSON.stringify(this.player),
           headers: {
             "content-type": "application/json"
           }
@@ -120,16 +149,16 @@ export default {
           .then(res => res.json())
           .then(data => {
             this.clearForm();
-            alert("Game Added");
-            this.fetchGames();
+            alert("Player Added");
+            this.fetchPlayers();
           })
           .catch(err => console.log(err));
       } else {
-        let id = this.game.id;
+        let id = this.player.id;
         // Update
-        fetch(`api/games/${id}`, {
+        fetch(`api/players/${id}`, {
           method: "post",
-          body: JSON.stringify(this.game),
+          body: JSON.stringify(this.player),
           headers: {
             "content-type": "application/json"
           }
@@ -137,21 +166,25 @@ export default {
           .then(res => res.json())
           .then(data => {
             this.clearForm();
-            alert("Game Updated");
-            this.fetchGames();
+            alert("Player Updated");
+            this.fetchPlayers();
           })
           .catch(err => console.log(err));
       }
     },
-    editGame(game) {
+    editPlayer(player) {
       this.edit = true;
-      this.game.id = game.id;
-      this.game.name = game.name;
+      this.player.id = player.id;
+      this.player.name = player.name;
+      this.player.game_id = player.game_id;
+      this.player.score = player.score;
     },
     clearForm() {
       this.edit = false;
-      this.game.id = "";
-      this.game.name = "";
+      this.player.id = "";
+      this.player.name = "";
+      this.player.game_id = "";
+      this.player.score = "";
     }
   }
 };
