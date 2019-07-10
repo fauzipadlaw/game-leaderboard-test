@@ -9,5 +9,6 @@
 5. `php artisan migrate`
 6. `php artisan key:generate`
 7. `php artisan jwt:secret`
+> If you don't want to change any interfaces, you can simply stop here and open the project.
 8. `npm install`
 9. `npm run watch`
