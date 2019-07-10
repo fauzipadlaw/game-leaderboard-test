@@ -24,7 +24,10 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => 'auth:api'
+    'middleware' => [
+        'auth:api',
+        'throttle:40,1' //limit rate request limit per user 40 hits per 60 seconds
+    ]
 ], function () {
     // game's routes
     Route::get('games', 'Api\GameController@index');
