@@ -30,27 +30,29 @@
     </nav>
     <hr />
     <div class="card card-body mb-2">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Game's Name</th>
-            <th>Players</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(game, index) in games" v-bind:key="game.id">
-            <td>{{ index + 1 }}</td>
-            <td>{{ game.name }}</td>
-            <td>{{ game.total_players }}</td>
-            <td>
-              <button @click="editGame(game)" class="btn btn-warning">Edit</button>
-              <button @click="deleteGame(game.id)" class="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Game's Name</th>
+              <th>Players</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(game, index) in games" v-bind:key="game.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ game.name }}</td>
+              <td>{{ game.total_players }}</td>
+              <td>
+                <button @click="editGame(game)" class="btn btn-warning">Edit</button>
+                <button @click="deleteGame(game.id)" class="btn btn-danger">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

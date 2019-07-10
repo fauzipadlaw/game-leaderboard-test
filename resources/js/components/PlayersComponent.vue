@@ -43,29 +43,31 @@
     </nav>
     <hr />
     <div class="card card-body mb-2">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Player's Name</th>
-            <th>Game</th>
-            <th>Score</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(player, index) in players" v-bind:key="player.id">
-            <td>{{ index + 1 }}</td>
-            <td>{{ player.name }}</td>
-            <td>{{ player.game }}</td>
-            <td>{{ player.score }}</td>
-            <td>
-              <button @click="editPlayer(player)" class="btn btn-warning">Edit</button>
-              <button @click="deletePlayer(player.id)" class="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="responsive-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player's Name</th>
+              <th>Game</th>
+              <th>Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(player, index) in players" v-bind:key="player.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ player.name }}</td>
+              <td>{{ player.game }}</td>
+              <td>{{ player.score }}</td>
+              <td>
+                <button @click="editPlayer(player)" class="btn btn-warning">Edit</button>
+                <button @click="deletePlayer(player.id)" class="btn btn-danger">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
