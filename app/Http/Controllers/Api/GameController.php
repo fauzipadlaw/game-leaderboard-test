@@ -49,7 +49,7 @@ class GameController extends Controller
                 'games.*',
                 DB::raw('count(players.id) as total_players')
             )
-            ->groupBy('games.id')
+            ->groupBy('games.id', 'games.name', 'games.deleted_at', 'games.created_at', 'games.updated_at')
             ->orderBy('total_players', 'desc')
             ->get();
 
