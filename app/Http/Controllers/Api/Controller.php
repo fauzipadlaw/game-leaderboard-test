@@ -12,8 +12,8 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     // set default auth driver to api
-    // public function __construct()
-    // {
-    //     auth()->setDefaultDriver('api');
-    // }
+    public function __construct()
+    {
+        auth()->setDefaultDriver('api');
+    }
 }

@@ -25,7 +25,7 @@ Route::group([
 
 Route::group([
     'middleware' => [
-        'auth:api',
+        // 'auth:api',
         'throttle:40,1' //limit rate request limit per user 40 hits per 60 seconds
     ]
 ], function () {
