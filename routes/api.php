@@ -24,7 +24,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => 'api'
+    'middleware' => 'auth:api'
 ], function () {
     // game's routes
     Route::get('games', 'Api\GameController@index');
@@ -41,3 +41,4 @@ Route::group([
     Route::post('players/{id}', 'Api\PlayerController@update');
     Route::delete('players/{id}', 'Api\PlayerController@delete');
 });
+
