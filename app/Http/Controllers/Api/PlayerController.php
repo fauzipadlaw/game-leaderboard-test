@@ -108,6 +108,18 @@ class PlayerController extends Controller
     }
 
     /**
+     * Deleted Players.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deletedPlayers()
+    {
+        $players = Player::onlyTrashed()->get();
+
+        return response()->json($players, 200);
+    }
+
+    /**
      * Pruge deleted game players.
      *
      * @return \Illuminate\Http\JsonResponse
@@ -128,5 +140,4 @@ class PlayerController extends Controller
             'message' => 'Players were deleted permanently.',
         ], 201);
     }
-
 }

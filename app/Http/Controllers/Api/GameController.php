@@ -145,6 +145,18 @@ class GameController extends Controller
     }
 
     /**
+     * Deleted games.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deletedGames()
+    {
+        $games = Game::onlyTrashed()->get();
+
+        return response()->json($games, 200);
+    }
+
+    /**
      * Purge deleted games.
      *
      * @return \Illuminate\Http\JsonResponse

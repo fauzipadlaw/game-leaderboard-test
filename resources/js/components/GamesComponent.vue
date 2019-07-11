@@ -54,6 +54,25 @@
         </table>
       </div>
     </div>
+    <div class="card card-body mb-2">
+      <button @click="purgeDeletedGames()" class="btn btn-danger">Permanently Delete?</button>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Deleted Games</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(game, index) in deletedGames" v-bind:key="game.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ game.name }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -62,6 +81,7 @@ export default {
   data() {
     return {
       games: [],
+      deletedGames: [],
       game: {
         id: "",
         name: ""
@@ -74,6 +94,7 @@ export default {
 
   created() {
     this.fetchGames();
+    this.fetchDeletedGames();
   },
 
   methods: {
@@ -91,6 +112,21 @@ export default {
         .then(res => {
           this.games = res.data;
           this.makePagination(res);
+        })
+        .catch(err => console.log(err));
+    },
+    fetchDeletedGames() {
+      let token = localStorage.getItem("access_token");
+      fetch("/api/games/deleted", {
+        method: "get",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          this.deletedGames = res;
         })
         .catch(err => console.log(err));
     },
@@ -117,6 +153,26 @@ export default {
           .then(data => {
             alert("Game Removed");
             this.fetchGames();
+            this.fetchDeletedGames();
+          })
+          .catch(err => console.log(err));
+      }
+    },
+    purgeDeletedGames() {
+      let token = localStorage.getItem("access_token");
+      if (confirm("Delete permanently?")) {
+        fetch(`api/games/purge-deleted`, {
+          method: "delete",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        })
+          .then(res => res.json())
+          .then(data => {
+            alert("Games destroyed from database.");
+            this.fetchGames();
+            this.fetchDeletedGames();
           })
           .catch(err => console.log(err));
       }

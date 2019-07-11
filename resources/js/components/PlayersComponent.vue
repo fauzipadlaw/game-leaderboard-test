@@ -69,6 +69,25 @@
         </table>
       </div>
     </div>
+    <div class="card card-body mb-2">
+      <button @click="purgeDeletedPlayers()" class="btn btn-danger">Permanently Delete?</button>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Deleted Players</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(player, index) in deletedPlayers" v-bind:key="player.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ player.name }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -77,6 +96,7 @@ export default {
   data() {
     return {
       players: [],
+      deletedPlayers: [],
       player: {
         id: "",
         name: "",
@@ -93,6 +113,7 @@ export default {
   created() {
     this.fetchPlayers();
     this.fetchGames();
+    this.fetchDeletedPlayers();
   },
 
   methods: {
@@ -128,6 +149,21 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    fetchDeletedPlayers() {
+      let token = localStorage.getItem("access_token");
+      fetch("/api/players/deleted", {
+        method: "get",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          this.deletedPlayers = res;
+        })
+        .catch(err => console.log(err));
+    },
     makePagination(meta) {
       let pagination = {
         current_page: meta.current_page,
@@ -151,6 +187,26 @@ export default {
           .then(data => {
             alert("Player Removed");
             this.fetchPlayers();
+            this.fetchDeletedPlayers();
+          })
+          .catch(err => console.log(err));
+      }
+    },
+    purgeDeletedPlayers() {
+      let token = localStorage.getItem("access_token");
+      if (confirm("Delete permanently?")) {
+        fetch(`api/players/purge-deleted`, {
+          method: "delete",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        })
+          .then(res => res.json())
+          .then(data => {
+            alert("Games destroyed from database.");
+            this.fetchPlayers();
+            this.fetchDeletedPlayers();
           })
           .catch(err => console.log(err));
       }
